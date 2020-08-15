@@ -1,0 +1,35 @@
+class Bullet {
+    field Mover m;
+    field Point v;
+    field String cs;
+    constructor Bullet new(int y, int x, int vy, int vx, int kind) {
+        let cs = ":*";
+        let m = Mover.new(y, x, cs.charAt(kind));
+        let v = Point.new(vy, vx);
+        if (Mover.inScreen(m.getP())) {
+            do m.draw();
+        }
+        return this;
+    }
+    method void dispose() {
+        do m.dispose();
+        do v.dispose();
+        do cs.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+    method Point getP() {
+        return m.getP();
+    }
+    method Point move() {
+        return m.moveBy(v.getY(), v.getX(), false);          
+    }
+    method void erase() {
+        do m.erase();
+        return;
+    }
+    method void draw() {
+        do m.draw();
+        return;
+    }
+}

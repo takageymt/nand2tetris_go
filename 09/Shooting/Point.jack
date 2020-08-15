@@ -1,0 +1,45 @@
+class Point {
+    field int y, x;
+    constructor Point new(int _y, int _x) {
+        let y = _y;
+        let x = _x;
+        return this;
+    }
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+    method int getY() {
+        return y;
+    }
+    method int getX() {
+        return x;
+    }
+    method Point copy() {
+        return Point.new(y, x);
+    }
+    method Point add(Point other) {
+        let y = y + other.getY();
+        let x = x + other.getX();
+        return this;
+    }
+    method Point inverseY() {
+        let y = -y;
+        return this;
+    }
+    method Point inverseX() {
+        let x = -x;
+        return this;
+    }
+    function Point sum(Point p, Point q) {
+        let p = Point.new(p.getY(), p.getX());
+        do p.add(q);
+        return p;
+    }
+    function int distance(Point p, Point q) {
+        var int dy, dx;
+        let dy = Math.abs(p.getY() - q.getY());
+        let dx = Math.abs(p.getX() - q.getX());
+        return dy + dx;
+    }
+}

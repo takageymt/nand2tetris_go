@@ -1,0 +1,50 @@
+class Mover {
+    field Point p;
+    field char view;
+    constructor Mover new(int y, int x, char _view) {
+        let p = Point.new(y, x);
+        let view = _view;
+        return this;
+    }
+    method void dispose() {
+        do p.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+    method Point getP() {
+        return p;
+    }
+    method void setView(char _view) {
+        let view = _view;
+        return;
+    }
+    method Point moveTo(int y, int x, boolean lockin) {
+        do p.dispose();
+        if (lockin) {
+            let y = Math.min(Math.max(0, y), 22);
+            let x = Math.min(Math.max(0, x), 63);
+        }
+        let p = Point.new(y, x);
+        return p;
+    }
+    method Point moveBy(int dy, int dx, boolean lockin) {
+        do moveTo(p.getY() + dy, p.getX() + dx, lockin);
+        return p;
+    }
+    method void erase() {
+        if (Mover.inScreen(p)) {
+            do Output.moveCursor(p.getY(), p.getX());
+        }
+        return;
+    }
+    method void draw() {
+        if (Mover.inScreen(p)) {
+            do Output.moveCursor(p.getY(), p.getX());
+            do Output.printChar(view);
+        }
+        return;
+    }
+    function boolean inScreen(Point p) {
+        return ((-1 < p.getY()) & (p.getY() < 23) & (-1 < p.getX()) & (p.getX() < 64));
+    }
+}

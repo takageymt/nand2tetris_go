@@ -1,0 +1,120 @@
+class Main {
+    function void main() {
+        var int i;
+        var boolean gameOver;
+        var Player player;
+        var Enemy enemy;
+        var Array bullets;
+        var Array e_bullets;
+        var int bs;
+        var int e_bs;
+        var Point p, q;
+        var Bullet b;
+
+        let gameOver = false;
+        let player = Player.new(20, 20);
+        let enemy = Enemy.new(5, 20);
+        let bullets = Array.new(32);
+        let e_bullets = Array.new(16);
+
+        let i = 0;
+        while (i < 32) {
+            let bullets[i] = null;
+            let i = i + 1;
+        }
+
+        let i = 0;
+        while (i < 16) {
+            let e_bullets[i] = null;
+            let i = i + 1;
+        }
+
+        let bs = 0;
+        let e_bs = 0;
+        while (~gameOver) {
+            do Sys.wait(200);
+
+            let p = player.move();
+            let q = enemy.move();
+
+            if (player.fire()) {
+                let bullets[(bs&31)] = Bullet.new(p.getY()-1, p.getX(), -1, 0, 0);
+                let bs = bs + 1;
+            }
+
+            let i = 0;
+            while (((i < 32) & (~gameOver))) {
+                let b = bullets[i];
+                if (~(b = null)) {
+                    do b.erase();
+                    let p = b.move();
+                    if (~(Mover.inScreen(p))) {
+                        do b.dispose();
+                        let bullets[i] = null;
+                    } 
+                    else {
+                        if (enemy.hit(p)) {
+                            let gameOver = true;
+                        }
+                        do b.draw();
+                    }
+                }
+                let i = i + 1;
+            }
+
+            if (enemy.fire()) {
+                let e_bullets[(e_bs&15)] = Bullet.new(q.getY()+1, q.getX()-1, 1, -1, 1);
+                let e_bs = e_bs + 1;
+                let e_bullets[(e_bs&15)] = Bullet.new(q.getY()+1, q.getX(), 1, 0, 1);
+                let e_bs = e_bs + 1;
+                let e_bullets[(e_bs&15)] = Bullet.new(q.getY()+1, q.getX()+1, 1, 1, 1);
+                let e_bs = e_bs + 1;
+            }
+
+            let i = 0;
+            while (((i < 16) & (~gameOver))) {
+                let b = e_bullets[i];
+                if (~(b = null)) {
+                    do b.erase();
+                    let p = b.move();
+                    if (~(Mover.inScreen(p))) {
+                        do b.dispose();
+                        let e_bullets[i] = null;
+                    } 
+                    else {
+                        if (player.hit(p)) {
+                            let gameOver = true;
+                        }
+                        do b.draw();
+                    }
+                }
+                let i = i + 1;
+            }
+
+        }
+
+        let i = 0;
+        while (i < 32) {
+            let b = bullets[i];
+            if (~(b = null)) {
+                do b.dispose();
+            }
+            let i = i + 1;
+        }
+        do bullets.dispose();
+
+        let i = 0;
+        while (i < 16) {
+            let b = e_bullets[i];
+            if (~(b = null)) {
+                do b.dispose();
+            }
+            let i = i + 1;
+        }
+        do e_bullets.dispose();
+
+        do enemy.dispose();
+        do player.dispose();
+        return;
+    }
+}

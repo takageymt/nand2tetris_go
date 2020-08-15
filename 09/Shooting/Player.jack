@@ -1,0 +1,60 @@
+class Player {
+    field Mover m;
+    field String cs;
+    constructor Player new(int y, int x) {
+        let cs = "AHJKLF";
+        let m = Mover.new(y, x, cs.charAt(0));
+        do m.draw();
+        return this;
+    }
+    method void dispose() {
+        do m.dispose();
+        do cs.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+    method Point getP() {
+        return m.getP();
+    }
+    method Point move() {
+        var char key;
+        var Point p;
+        let key = Keyboard.keyPressed();
+        let p = m.getP();
+        if ((key = cs.charAt(1))) {
+            do m.erase();
+            let p = m.moveBy(0, -1, true);
+            do m.draw();
+        } 
+        if ((key = cs.charAt(2))) {
+            do m.erase();
+            let p = m.moveBy(1, 0, true);
+            do m.draw();
+        } 
+        if ((key = cs.charAt(3))) {
+            do m.erase();
+            let p = m.moveBy(-1, 0, true);
+            do m.draw();
+        } 
+        if ((key = cs.charAt(4))) {
+            do m.erase();
+            let p = m.moveBy(0, 1, true);
+            do m.draw();
+        }
+        return p;
+    }
+    method boolean fire() {
+        return (Keyboard.keyPressed() = cs.charAt(5));
+    }
+    method boolean hit(Point p) {
+        return (Point.distance(m.getP(), p) = 0);
+    }
+    method void erase() {
+        do m.erase();
+        return;
+    }
+    method void draw() {
+        do m.draw();
+        return;
+    }
+}

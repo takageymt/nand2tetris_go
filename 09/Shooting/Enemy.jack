@@ -1,0 +1,55 @@
+class Enemy {
+    field Mover m;
+    field Point v;
+    field int trigger;
+    field String cs;
+    constructor Enemy new(int y, int x) {
+        let cs = "V";
+        let m = Mover.new(y, x, cs.charAt(0));
+        let v = Point.new(0, 1);
+        let trigger = 0;
+        do m.draw();
+        return this;
+    }
+    method void dispose() {
+        do m.dispose();
+        do v.dispose();
+        do cs.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+    method Point getP() {
+        return m.getP();
+    }
+    method Point move() {
+        var Point p;
+        let p = Point.sum(m.getP(), v);
+        if (~(Mover.inScreen(p))) {
+            do v.inverseX();
+        }
+        do p.dispose();
+        do m.erase();
+        let p = m.moveBy(v.getY(), v.getX(), true);
+        do m.draw();
+        return p;
+    }
+    method boolean fire() {
+        if (trigger = 10) {
+            let trigger = 0;
+            return true;
+        }
+        let trigger = trigger + 1;
+        return false;
+    }
+    method boolean hit(Point p) {
+        return (Point.distance(m.getP(), p) = 0);
+    }
+    method void erase() {
+        do m.erase();
+        return;
+    }
+    method void draw() {
+        do m.draw();
+        return;
+    }
+}
