@@ -38,6 +38,7 @@ const (
 	STAR    = '*'
 	SPACE   = ' '
 	TAB     = '\t'
+	DQUOTE  = '"'
 )
 
 var re_identifier = regexp.MustCompile(`[A-Za-z_][0-9A-Za-z_]*`)
@@ -56,6 +57,7 @@ type JackTokenizer struct {
 	scn         *bufio.Scanner
 	buf         []string
 	token       string
+	skipString  bool
 	skipComment bool
 }
 
@@ -106,7 +108,7 @@ func (jtkn *JackTokenizer) IntVal() string {
 }
 
 func (jtkn *JackTokenizer) StringVal() string {
-	return jtkn.token
+	return jtkn.token[1 : len(jtkn.token)-1]
 }
 
 func (jtkn *JackTokenizer) parseLine(line string) {
@@ -124,11 +126,22 @@ func (jtkn *JackTokenizer) parseLine(line string) {
 			if c == SLASH && b == STAR {
 				jtkn.skipComment = false
 			}
-			b = c
-			continue
-		}
+		} else if c == DQUOTE {
+			s := bld.String()
+			bld.Reset()
 
-		if strings.IndexRune(SYMBOLS, c) != -1 {
+			if jtkn.skipString {
+				jtkn.skipString = false
+				s += string(c)
+			} else {
+				jtkn.skipString = true
+				bld.WriteRune(c)
+			}
+			if len(s) > 0 {
+				jtkn.buf = append(jtkn.buf, s)
+			}
+
+		} else if !jtkn.skipString && strings.IndexRune(SYMBOLS, c) != -1 {
 			if c == SLASH && b == SLASH {
 				jtkn.buf = jtkn.buf[:len(jtkn.buf)-1]
 				return

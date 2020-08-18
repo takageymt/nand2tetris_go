@@ -205,7 +205,7 @@ func (jce *JackCE) CompileParameterList() {
 
 func (jce *JackCE) CompileVarDec() {
 	jce.bw.WriteString("<varDec>\n")
-	if jce.data.Type != SYMBOL || jce.data.Token != "var" {
+	if jce.data.Type != KEYWORD || jce.data.Token != "var" {
 		return
 	}
 	jce.FlushAdvance() // var
@@ -398,6 +398,10 @@ func (jce *JackCE) CompileIf() {
 func (jce *JackCE) CompileExpression() {
 	jce.bw.WriteString("<expression>\n")
 	jce.CompileTerm()
+	for jce.data.IsBinOp() {
+		jce.FlushAdvance() // op
+		jce.CompileTerm()
+	}
 	jce.bw.WriteString("</expression>\n")
 }
 
@@ -455,6 +459,7 @@ func (jce *JackCE) CompileTerm() {
 					fmt.Println("ERROR4")
 					return
 				}
+				jce.FlushAdvance()
 			}
 		}
 	} else {
