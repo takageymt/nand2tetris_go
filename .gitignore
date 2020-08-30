@@ -11,3 +11,5 @@
 !/08/vm_translator/*
 !/09/Shooting/*.jack
 !/10/ProtoCompiler/*.go
+!/11/JackCompiler/*.go
+!/12/*.jack

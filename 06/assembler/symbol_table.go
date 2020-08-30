@@ -30,8 +30,6 @@ func NewMySymbolTable() *MySymbolTable {
 		sym_tbl.table["R"+strconv.Itoa(i)] = i
 	}
 
-	fmt.Printf("%v\n", sym_tbl)
-
 	return sym_tbl
 }
 
