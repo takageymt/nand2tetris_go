@@ -1,0 +1,98 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */ 
+class Memory {
+    static Array MEM;   
+
+    /** Initializes the class. */
+    function void init() {
+        let MEM = 0;
+        let MEM[2048] = 2050;
+        let MEM[2049] = 14335;
+        let MEM[2050] = 0;
+        return;
+    }
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) {
+        return MEM[address];
+    }
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+        let MEM[address] = value;
+        return;
+    }
+
+    /** Finds an available RAM block of the given size and returns
+     *  a reference to its base address. */
+    function int alloc(int size) {
+        var int p, i;
+        
+        if (~(size > 0)) {
+            do Sys.error(5);
+        }
+
+        let size = size + 1;
+
+        let i = 2048;
+        while (~(MEM[i] = 0) & (MEM[MEM[i]-1] < size)) {
+            let i = MEM[i];
+        }
+        if (MEM[MEM[i]-1] < size) {
+            do Sys.error(6);
+        }
+        let p = MEM[i];
+        if (MEM[MEM[i]-1] > size) {
+            let MEM[MEM[i]-1+size] = MEM[MEM[i]-1]-size;
+            let MEM[MEM[i]+size] = MEM[MEM[i]];
+
+            let MEM[i] = MEM[i]+size;
+        } else {
+            let MEM[i] = MEM[MEM[i]];
+        }
+        return p;
+    }
+
+    /** De-allocates the given object (cast as an array) by making
+     *  it available for future allocations. */
+    function void deAlloc(Array o) {
+        var int i;
+        var boolean f;
+        let i = 2048;
+        let f = true;
+        while (~(MEM[i] = 0) & (MEM[i] < o)) {
+            let i = MEM[i];
+        }
+        if (i > 2048) {
+            if ((i+MEM[i-1]) = o) {
+                if ((o+o[-1]) = MEM[i]) {
+                    let MEM[i-1] = MEM[i-1] + o[-1] + MEM[MEM[i]-1];
+                    let MEM[i] = MEM[MEM[i]];
+                } else {
+                    let MEM[i-1] = MEM[i-1] + o[-1];
+                    let f = false;
+                }
+                let f = false;
+            }
+        } 
+        if (f) {
+            if ((o+o[-1]) = MEM[i]) {
+                let o[-1] = o[-1] + MEM[MEM[i]-1];
+                let o[0] = MEM[MEM[i]];
+                let MEM[i] = o;
+            } else {
+                let o[0] = MEM[i];
+                let MEM[i] = o;
+            }
+        }
+        return;
+    }
+}
